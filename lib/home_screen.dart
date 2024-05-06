@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:socital/styles.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -40,7 +41,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('All Posts'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
+        backgroundColor: AppColors.kindaYellow,
+        title: Text(
+          'Home',
+          style: TextStyles.title,
+        ),
+        centerTitle: true,
+        elevation: 0,
       ),
       body: posts.isEmpty
           ? Center(
@@ -49,9 +61,27 @@ class _HomeScreenState extends State<HomeScreen> {
           : ListView.builder(
               itemCount: posts.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(posts[index]['post']),
-                  // Jika ingin menampilkan gambar, tambahkan widget Image di sini
+                return Card(
+                  child: ListTile(
+                    title: Text('Posted by: ${posts[index]['userid']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (posts[index]['post'] != null)
+                          Text(posts[index]['post']),
+                        if (posts[index]['postpic'] != null)
+                          Image.network(
+                            posts[index]['postpic'],
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        Text('Date: ${posts[index]['datetime']}'),
+                        Text('Likes: ${posts[index]['likes']}'),
+                        Text('Comments: ${posts[index]['comments']}'),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
