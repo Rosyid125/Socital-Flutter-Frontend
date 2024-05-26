@@ -15,6 +15,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   List<dynamic> posts = [];
+  Map<String, dynamic> user = {};
 
   @override
   void initState() {
@@ -22,6 +23,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userid = int.parse(
         Get.parameters['userid']!); // Get the userid from route parameters
     fetchPosts(userid);
+    fetchUserInfo(); // Fetch user info when the screen initializes
+  }
+
+  Future<void> fetchUserInfo() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userid = prefs.getInt('userid');
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/users/$userid'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          user = json.decode(response.body)['user'][0];
+        });
+      } else {
+        throw Exception('Failed to load user information');
+      }
+    } catch (error) {
+      print(error.toString());
+      // Handle error
+    }
   }
 
   Future<void> fetchPosts(int userid) async {
@@ -81,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         backgroundColor: AppColors.kindaYellow,
         title: const Text(
-          'Home',
+          'User Profile',
         ),
         centerTitle: true,
         elevation: 0,
@@ -90,84 +114,161 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            ListTile(
-                              title: Text(
-                                  'Posted by: ${posts[index]['user']['username']}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (posts[index]['content'] != null)
-                                    Text(posts[index]['content']),
-                                  if (posts[index]['postpicture'] != null)
-                                    Image.network(
-                                      posts[index]['postpicture'],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  Text('Date: ${posts[index]['datetime']}'),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          : ListView(
+              children: [
+                user.isEmpty
+                    ? const CircularProgressIndicator()
+                    : userCard(user),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: posts.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.thumb_up),
-                                  onPressed: () {
-                                    // Implement like functionality here
-                                  },
+                                ListTile(
+                                  title: Text(
+                                      'Posted by: ${posts[index]['user']['username']}'),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (posts[index]['content'] != null)
+                                        Text(posts[index]['content']),
+                                      if (posts[index]['postpicture'] != null)
+                                        Image.network(
+                                          posts[index]['postpicture'],
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      Text('Date: ${posts[index]['datetime']}'),
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  '${posts[index]['likes']}',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.comment),
-                                  onPressed: () {
-                                    // Implement comment functionality here
-                                  },
-                                ),
-                                Text(
-                                  '${posts[index]['comments']}',
-                                  style: const TextStyle(fontSize: 18),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.thumb_up),
+                                      onPressed: () {
+                                        // Implement like functionality here
+                                      },
+                                    ),
+                                    Text(
+                                      '${posts[index]['likes']}',
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.comment),
+                                      onPressed: () {
+                                        // Implement comment functionality here
+                                      },
+                                    ),
+                                    Text(
+                                      '${posts[index]['comments']}',
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          Positioned(
+                            top: 8.0,
+                            right: 8.0,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                deletePost(posts[index]['postid']);
+                                // Implement delete functionality
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        top: 8.0,
-                        right: 8.0,
-                        child: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            deletePost(posts[index]['postid']);
-                            // Implement delete functionality
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
       drawer: const MyDrawer(),
+    );
+  }
+
+  Widget userCard(Map<String, dynamic> user) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: NetworkImage(user['profilepicture']),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              user['username'],
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              user['email'],
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Text(user['bio']),
+            const SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      '${user['followers']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text('Followers'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      '${user['followings']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text('Followings'),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
