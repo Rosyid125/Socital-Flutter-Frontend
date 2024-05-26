@@ -28,6 +28,14 @@ class _MyDrawerState extends State<MyDrawer> {
     });
   }
 
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences
+        .getInstance(); // Ini sayanga bisa saya lakukan cuman menghapus dari sharedprefs, lasoalnya kan cors errror, sedih padahal sudah buat auth middleware
+    await prefs.remove('userid');
+    await prefs.remove('token');
+    Get.offAllNamed('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -93,6 +101,7 @@ class _MyDrawerState extends State<MyDrawer> {
             title: const Text('Logout'),
             onTap: () {
               // Add logout logic here
+              logout();
             },
           ),
         ],

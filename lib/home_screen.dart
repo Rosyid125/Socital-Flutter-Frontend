@@ -96,8 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
-                              title: Text(
-                                  'Posted by: ${posts[index]['user']['username']}'),
+                              title:
+                                  Text('${posts[index]['user']['username']}'),
+                              // leading: CircleAvatar(
+                              //   radius: 40,
+                              //   backgroundImage: NetworkImage(
+                              //       posts[index]['user']['profilepicture']),
+                              // ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -145,17 +150,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      Positioned(
-                        top: 8.0,
-                        right: 8.0,
-                        child: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            deletePost(posts[index]['postid']);
-                            // Implement delete functionality
-                          },
-                        ),
-                      ),
+                      // Positioned(
+                      //   top: 8.0,
+                      //   right: 8.0,
+                      //   child: IconButton(
+                      //     icon: const Icon(Icons.delete),
+                      //     onPressed: () {
+                      //       deletePost(posts[index]['postid']);
+                      //       // Implement delete functionality
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
                 );

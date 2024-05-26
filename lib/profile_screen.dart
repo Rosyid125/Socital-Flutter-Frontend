@@ -23,13 +23,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userid = int.parse(
         Get.parameters['userid']!); // Get the userid from route parameters
     fetchPosts(userid);
-    fetchUserInfo(); // Fetch user info when the screen initializes
+    fetchUserInfo(userid); // Fetch user info when the screen initializes
   }
 
-  Future<void> fetchUserInfo() async {
+  Future<void> fetchUserInfo(int userid) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final userid = prefs.getInt('userid');
       final response = await http.get(
         Uri.parse('http://127.0.0.1:8000/api/users/$userid'),
         headers: {'Content-Type': 'application/json'},
@@ -134,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 ListTile(
                                   title: Text(
-                                      'Posted by: ${posts[index]['user']['username']}'),
+                                      '${posts[index]['user']['username']}'),
                                   subtitle: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -184,17 +182,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             ),
                           ),
-                          Positioned(
-                            top: 8.0,
-                            right: 8.0,
-                            child: IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                deletePost(posts[index]['postid']);
-                                // Implement delete functionality
-                              },
-                            ),
-                          ),
+                          // Positioned(
+                          //   top: 8.0,
+                          //   right: 8.0,
+                          //   child: IconButton(
+                          //     icon: const Icon(Icons.delete),
+                          //     onPressed: () {
+                          //       deletePost(posts[index]['postid']);
+                          //       // Implement delete functionality
+                          //     },
+                          //   ),
+                          // ),
                         ],
                       ),
                     );
@@ -214,10 +212,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: NetworkImage(user['profilepicture']),
-            ),
+            user['profilepicture'] != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(user['profilepicture']),
+                  )
+                : CircleAvatar(
+                    child: Icon(Icons.person),
+                  ),
             const SizedBox(height: 16.0),
             Text(
               user['username'],
