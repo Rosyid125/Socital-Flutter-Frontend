@@ -1,9 +1,32 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socital/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
+class MyDrawer extends StatefulWidget {
+  const MyDrawer({Key? key}) : super(key: key);
+
+  @override
+  _MyDrawerState createState() => _MyDrawerState();
+}
+
+class _MyDrawerState extends State<MyDrawer> {
+  int? userid;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserId();
+  }
+
+  Future<void> fetchUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt('userid');
+    setState(() {
+      userid = id;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +65,12 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
-              Get.toNamed('/profile');
+              if (userid != null) {
+                Get.toNamed('/profile/$userid');
+              } else {
+                // Handle the case where userid is null if necessary
+                print('User ID not found');
+              }
             },
           ),
           ListTile(
@@ -64,7 +92,7 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
             onTap: () {
-              // Tambahkan logika logout di sini
+              // Add logout logic here
             },
           ),
         ],
