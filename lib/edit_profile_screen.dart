@@ -143,7 +143,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 height: 20.0,
               ),
               ElevatedButton(
-                  onPressed: _editProfile, child: Text('Save Changes')),
+                  onPressed: _editProfile, child: const Text('Save Changes')),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),

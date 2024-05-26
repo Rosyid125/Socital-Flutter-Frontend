@@ -5,7 +5,7 @@ import 'package:socital/widget/my_drawer.dart';
 import 'styles.dart';
 
 class UserSearchPage extends StatefulWidget {
-  const UserSearchPage({Key? key}) : super(key: key);
+  const UserSearchPage({super.key});
 
   @override
   _UserSearchPageState createState() => _UserSearchPageState();
@@ -39,7 +39,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
         _loading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching data')),
+        const SnackBar(content: Text('Error fetching data')),
       );
     }
   }
@@ -69,7 +69,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
               decoration: InputDecoration(
                 labelText: 'Search Users',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     _searchUsers(_controller.text);
                   },
@@ -79,9 +79,9 @@ class _UserSearchPageState extends State<UserSearchPage> {
                 _searchUsers(value);
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _loading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : Expanded(
                     child: ListView.builder(
                       itemCount: _users.length,
@@ -95,10 +95,15 @@ class _UserSearchPageState extends State<UserSearchPage> {
                           //       )
                           //     : CircleAvatar(
                           //         child: Icon(Icons.person),
-                          //       ),
                           title: Text(user['username']),
                           subtitle: Text(
                               'Followers: ${user['followers']} | Followings: ${user['followings']}'),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/profile/${user['userid']}',
+                            );
+                          },
                         );
                       },
                     ),

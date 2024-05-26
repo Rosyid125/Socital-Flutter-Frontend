@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ListTile(
                               title: Text(
                                 '${posts[index]['user']['username']}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -112,17 +112,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   if (posts[index]['content'] != null)
                                     Text(posts[index]['content'],
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 16, color: Colors.black)),
                                   if (posts[index]['postpicture'] != null)
-                                    Text(
+                                    const Text(
                                       'This post has picture, to see the picture go to the web version of this app.',
                                       style: TextStyle(
                                           color: Colors.red, fontSize: 12),
                                     ),
                                   Text(
                                     '${posts[index]['datetime']}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: AppColors.kindaBlue,
                                         fontSize: 10),
                                   ),

@@ -5,7 +5,7 @@ import 'package:socital/styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyDrawer extends StatefulWidget {
-  const MyDrawer({Key? key}) : super(key: key);
+  const MyDrawer({super.key});
 
   @override
   _MyDrawerState createState() => _MyDrawerState();

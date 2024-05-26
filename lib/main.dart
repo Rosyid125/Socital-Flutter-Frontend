@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socital/routesprotection/AuthMiddleware.dart';
-import 'package:socital/routesprotection/ProtectedRoute.dart';
 import 'package:socital/login_screen.dart';
 import 'package:socital/register_screen.dart';
 import 'package:socital/home_screen.dart';
