@@ -88,14 +88,14 @@ class _UserSearchPageState extends State<UserSearchPage> {
                       itemBuilder: (context, index) {
                         final user = _users[index];
                         return ListTile(
-                          leading: user['profilepicture'] != null
-                              ? CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(user['profilepicture']),
-                                )
-                              : CircleAvatar(
-                                  child: Icon(Icons.person),
-                                ),
+                          // leading: user['profilepicture'] != null
+                          //     ? CircleAvatar(
+                          //         backgroundImage:
+                          //             NetworkImage(user['profilepicture']),
+                          //       )
+                          //     : CircleAvatar(
+                          //         child: Icon(Icons.person),
+                          //       ),
                           title: Text(user['username']),
                           subtitle: Text(
                               'Followers: ${user['followers']} | Followings: ${user['followings']}'),

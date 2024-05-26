@@ -132,21 +132,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 ListTile(
                                   title: Text(
-                                      '${posts[index]['user']['username']}'),
+                                    '${posts[index]['user']['username']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
                                   subtitle: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       if (posts[index]['content'] != null)
-                                        Text(posts[index]['content']),
+                                        Text(posts[index]['content'],
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black)),
                                       if (posts[index]['postpicture'] != null)
-                                        Image.network(
-                                          posts[index]['postpicture'],
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
+                                        Text(
+                                          'This post has picture, to see the picture go to the web version of this app.',
+                                          style: TextStyle(
+                                              color: Colors.red, fontSize: 12),
                                         ),
-                                      Text('Date: ${posts[index]['datetime']}'),
+                                      Text(
+                                        '${posts[index]['datetime']}',
+                                        style: TextStyle(
+                                            color: AppColors.kindaBlue,
+                                            fontSize: 10),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -212,13 +223,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            user['profilepicture'] != null
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(user['profilepicture']),
-                  )
-                : CircleAvatar(
-                    child: Icon(Icons.person),
-                  ),
+            // user['profilepicture'] != null
+            //     ? CircleAvatar(
+            //         backgroundImage: NetworkImage(user['profilepicture']),
+            //       )
+            //     : CircleAvatar(
+            //         child: Icon(Icons.person),
+            //       ),
             const SizedBox(height: 16.0),
             Text(
               user['username'],

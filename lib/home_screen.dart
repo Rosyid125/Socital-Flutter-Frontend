@@ -96,8 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ListTile(
-                              title:
-                                  Text('${posts[index]['user']['username']}'),
+                              title: Text(
+                                '${posts[index]['user']['username']}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
                               // leading: CircleAvatar(
                               //   radius: 40,
                               //   backgroundImage: NetworkImage(
@@ -107,15 +111,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (posts[index]['content'] != null)
-                                    Text(posts[index]['content']),
+                                    Text(posts[index]['content'],
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black)),
                                   if (posts[index]['postpicture'] != null)
-                                    Image.network(
-                                      posts[index]['postpicture'],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
+                                    Text(
+                                      'This post has picture, to see the picture go to the web version of this app.',
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
                                     ),
-                                  Text('Date: ${posts[index]['datetime']}'),
+                                  Text(
+                                    '${posts[index]['datetime']}',
+                                    style: TextStyle(
+                                        color: AppColors.kindaBlue,
+                                        fontSize: 10),
+                                  ),
                                 ],
                               ),
                             ),
