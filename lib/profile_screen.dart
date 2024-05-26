@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Import Get package
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:socital/styles.dart';
 import 'package:socital/widget/my_drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   List<dynamic> posts = [];
 
   @override
   void initState() {
     super.initState();
-    fetchPosts();
+    final userid = int.parse(
+        Get.parameters['userid']!); // Get the userid from route parameters
+    fetchPosts(userid);
   }
 
-  Future<void> fetchPosts() async {
+  Future<void> fetchPosts(int userid) async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final userid = prefs.getInt('userid');
-
       final response = await http.get(
-        Uri.parse(
-            'http://127.0.0.1:8000/api/users/$userid/allposts'), // Ganti dengan URL API Anda
+        Uri.parse('http://127.0.0.1:8000/api/users/$userid/posts'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -51,13 +50,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final response = await http.delete(
-        Uri.parse(
-            'localhost:8000/api/posts/$postId/delete'), // Ganti dengan URL API Anda
+        Uri.parse('http://127.0.0.1:8000/api/posts/$postId/delete'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          posts.removeWhere((post) => post['postid'] == postId);
+        });
+      } else {
+        throw Exception('Failed to delete post');
+      }
     } catch (error) {
       print(error.toString());
       // Handle error
@@ -162,116 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
       drawer: const MyDrawer(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const NewPostScreen(),
-            ),
-          );
-        },
-        child: const Icon(Icons.post_add),
-      ),
-    );
-  }
-}
-
-class NewPostScreen extends StatefulWidget {
-  const NewPostScreen({super.key});
-
-  @override
-  _NewPostScreenState createState() => _NewPostScreenState();
-}
-
-class _NewPostScreenState extends State<NewPostScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _contentController = TextEditingController();
-
-  Future<void> _submitPost() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
-      final uri = Uri.parse('http://localhost:8000/api/posts/create');
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'content': _contentController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        Navigator.pop(context);
-      } else {
-        throw Exception('Failed to create new post');
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Post'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Create a New Post',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _contentController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: 'Content',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some content';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _submitPost,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Submit Post'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:socital/utils/api_endpoints.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,9 +26,11 @@ class LoginController extends GetxController {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         var token = json['token'];
-        print(token);
-        // SharedPreferences prefs = await SharedPreferences.getInstance();
-        // await prefs.setString('token', token);
+        var userid = json['userid'];
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setInt('userid', userid);
         Get.offNamed('/home');
       } else {
         var message = "Unknown error occurred";

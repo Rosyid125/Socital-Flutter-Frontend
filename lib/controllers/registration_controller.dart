@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:socital/utils/api_endpoints.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 // final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -13,6 +11,7 @@ class RegistrationController extends GetxController {
     required String username,
     required String email,
     required String password,
+    required String confpassword,
   }) async {
     try {
       var headers = {'Content-Type': 'application/json'};
@@ -23,13 +22,13 @@ class RegistrationController extends GetxController {
         'username': username,
         'email': email.trim(),
         'password': password,
+        'confpassword': confpassword,
       };
 
       http.Response response =
           await http.post(url, body: jsonEncode(body), headers: headers);
 
-      if (response.statusCode == 201) {
-        print('sukses');
+      if (response.statusCode == 200) {
         Get.offNamed('/login');
       } else {
         var message = "Unknown error occurred";

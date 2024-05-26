@@ -5,18 +5,22 @@ import 'package:socital/routesprotection/ProtectedRoute.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
+import 'notifications_screen.dart';
+import 'profile_screen.dart';
+import 'edit_profile_screen.dart';
+import 'search_users.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final AuthService _authService = AuthService();
+    final AuthService authService = AuthService();
     return GetMaterialApp(
       // Replace MaterialApp with GetMaterialApp
       debugShowCheckedModeBanner: false,
@@ -36,13 +40,17 @@ class MyApp extends StatelessWidget {
       // ),
       initialRoute: '/login', // Set initial route to login
       getPages: [
-        GetPage(name: '/login', page: () => LoginScreen()),
+        GetPage(name: '/login', page: () => const LoginScreen()),
         GetPage(
             name: '/register',
-            page: () => RegisterScreen()), // Add GetPage for register
+            page: () => const RegisterScreen()), // Add GetPage for register
         GetPage(
             name: '/home',
-            page: () => HomeScreen()), // Add GetPage for register
+            page: () => const HomeScreen()), // Add GetPage for register
+        GetPage(name: '/notifications', page: () => const NotificationScreen()),
+        GetPage(name: '/profile/:userid', page: () => const ProfileScreen()),
+        GetPage(name: '/updateprofile', page: () => const ProfileEditScreen()),
+        GetPage(name: '/searchuser', page: () => const UserSearchPage()),
       ],
     );
   }
