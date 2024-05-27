@@ -52,6 +52,7 @@ class _MyDrawerState extends State<MyDrawer> {
               alignment: Alignment.center,
               child: Text(
                 'Socital',
+                style: (TextStyle(fontSize: 20)),
               ),
             ),
           ),

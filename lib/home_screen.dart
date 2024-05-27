@@ -128,6 +128,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/profile/${posts[index]['userid']}',
+                                );
+                              },
+                            ),
+                            Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                              height: 20,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -224,6 +235,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
       if (response.statusCode == 200) {
         Navigator.pop(context);
+        //reload page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
       } else {
         throw Exception('Failed to create new post');
       }

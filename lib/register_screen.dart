@@ -132,9 +132,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               ElevatedButton(
                 onPressed: _registerUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.kindaYellow,
-                ),
                 child: Text('Register',
                     style: TextStyles.title.copyWith(fontSize: 20.0)),
               ),

@@ -161,6 +161,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
+                                Divider(
+                                  color: Colors.grey,
+                                  thickness: 1,
+                                  height: 20,
+                                ),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,

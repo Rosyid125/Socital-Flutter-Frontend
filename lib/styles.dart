@@ -12,12 +12,10 @@ class TextStyles {
     fontFamily: 'Outfit',
     fontWeight: FontWeight.bold,
     fontSize: 30.0,
-    color: AppColors.kindaRed,
   );
   static TextStyle body = const TextStyle(
     fontFamily: 'Roboto',
     fontWeight: FontWeight.normal,
     fontSize: 10.0,
-    color: AppColors.kindaBlue,
   );
 }

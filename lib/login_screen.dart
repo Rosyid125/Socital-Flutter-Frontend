@@ -98,9 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               ElevatedButton(
                 onPressed: _loginUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.kindaYellow,
-                ),
                 child: Text('Login',
                     style: TextStyles.title.copyWith(fontSize: 20.0)),
               ),
