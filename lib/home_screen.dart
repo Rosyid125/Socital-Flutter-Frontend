@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> posts = [];
+  int? _userid;
 
   @override
   void initState() {
@@ -25,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final userid = prefs.getInt('userid');
+
+      setState(() {
+        _userid = userid;
+      });
 
       final response = await http.get(
         Uri.parse(
@@ -51,18 +56,67 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final response = await http.delete(
-        Uri.parse(
-            'localhost:8000/api/posts/$postId/delete'), // Ganti dengan URL API Anda
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+          Uri.parse(
+              'http://127.0.0.1:8000/api/posts/$postId/delete'), // Ganti dengan URL API Anda
+          headers: {'Authorization': 'Bearer $token'});
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+        //reload page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      } else {
+        throw Exception('Failed to create new post');
+      }
     } catch (error) {
       print(error.toString());
       // Handle error
     }
   }
+
+  // Future<void> likePost(int postId) async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+  //   try {
+  //     final response = await http.post(
+  //         Uri.parse(
+  //             'http://127.0.0.1:8000/api/posts/$postId/likes/like'), // Ganti dengan URL API Anda
+  //         headers: {'Authorization': 'Bearer $token'});
+  //     if (response.statusCode == 200) {
+  //       fetchPosts();
+  //       // setState(() {
+  //       //   _likeId = json.decode(response.body)['likeid'];
+  //       // });
+  //     } else {
+  //       throw Exception('Failed to like');
+  //     }
+  //   } catch (error) {
+  //     print(error.toString());
+  //     // Handle error
+  //   }
+  // }
+
+  // Future<void> unlikePost(int postId, likeId) async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+  //   try {
+  //     final response = await http.post(
+  //         Uri.parse(
+  //             'http://127.0.0.1:8000/api/posts/$postId/likes/$likeId'), // Ganti dengan URL API Anda
+  //         headers: {'Authorization': 'Bearer $token'});
+  //     if (response.statusCode == 200) {
+  //       fetchPosts();
+  //     } else {
+  //       throw Exception('Failed unlike');
+  //     }
+  //   } catch (error) {
+  //     print(error.toString());
+  //     // Handle error
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -95,45 +149,65 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ListTile(
-                              title: Text(
-                                '${posts[index]['user']['username']}',
-                                style: const TextStyle(
-                                  fontSize: 18,
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 8.0),
+                              padding: EdgeInsets.all(16.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/profile/${posts[index]['userid']}',
+                                  );
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(
+                                              posts[index]['user']
+                                                  ['profilepicture']),
+                                        ),
+                                        SizedBox(width: 16.0),
+                                        Text(
+                                          '${posts[index]['user']['username']}',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 12.0),
+                                    if (posts[index]['content'] != null)
+                                      Text(
+                                        posts[index]['content'],
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    if (posts[index]['postpicture'] != null)
+                                      SizedBox(
+                                        height: 200,
+                                        child: Image.network(
+                                          posts[index]['postpicture'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    SizedBox(height: 8.0),
+                                    Text(
+                                      '${posts[index]['datetime']}',
+                                      style: TextStyle(
+                                        color: AppColors.kindaBlue,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              // leading: CircleAvatar(
-                              //   radius: 40,
-                              //   backgroundImage: NetworkImage(
-                              //       posts[index]['user']['profilepicture']),
-                              // ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (posts[index]['content'] != null)
-                                    Text(posts[index]['content'],
-                                        style: const TextStyle(
-                                            fontSize: 16, color: Colors.black)),
-                                  if (posts[index]['postpicture'] != null)
-                                    const Text(
-                                      'This post has picture, to see the picture go to the web version of this app.',
-                                      style: TextStyle(
-                                          color: Colors.red, fontSize: 12),
-                                    ),
-                                  Text(
-                                    '${posts[index]['datetime']}',
-                                    style: const TextStyle(
-                                        color: AppColors.kindaBlue,
-                                        fontSize: 10),
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/profile/${posts[index]['userid']}',
-                                );
-                              },
                             ),
                             Divider(
                               color: Colors.grey,
@@ -143,45 +217,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.thumb_up),
-                                  onPressed: () {
-                                    // Implement like functionality here
-                                  },
-                                ),
                                 Text(
-                                  '${posts[index]['likes']}',
-                                  style: const TextStyle(fontSize: 18),
+                                  '${posts[index]['likes']} Likes',
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 const SizedBox(
                                   width: 8,
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.comment),
-                                  onPressed: () {
-                                    // Implement comment functionality here
-                                  },
-                                ),
                                 Text(
-                                  '${posts[index]['comments']}',
-                                  style: const TextStyle(fontSize: 18),
+                                  '${posts[index]['comments']} Comments',
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      // Positioned(
-                      //   top: 8.0,
-                      //   right: 8.0,
-                      //   child: IconButton(
-                      //     icon: const Icon(Icons.delete),
-                      //     onPressed: () {
-                      //       deletePost(posts[index]['postid']);
-                      //       // Implement delete functionality
-                      //     },
-                      //   ),
-                      // ),
+                      if (posts[index]['user']['userid'] == _userid)
+                        Positioned(
+                          top: 8.0,
+                          right: 8.0,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              deletePost(posts[index]['postid']);
+                              // Implement delete functionality
+                            },
+                          ),
+                        ),
                     ],
                   ),
                 );
